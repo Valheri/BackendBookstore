@@ -40,6 +40,7 @@
                 <th>Publication Year</th>
                 <th>ISBN</th>
                 <th>Price</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -49,8 +50,12 @@
                 <td th:text="${book.publicationYear}">Publication Year</td>
                 <td th:text="${book.isbn}">ISBN</td>
                 <td th:text="${book.price}">Price</td>
+                <td>
+                    <a th:href="@{/delete/{id}(id=${book.id})}">Delete</a>
+                </td>
             </tr>
         </tbody>
     </table>
+    <a href="/addbook">Add a book</a>
 </body>
 </html>
