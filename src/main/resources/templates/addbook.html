@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,20 +16,24 @@
             height: 100vh;
             background-color: #f4f4f4;
         }
+
         h1 {
             color: #333;
         }
+
         form {
             background: #fff;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+
         label {
             display: block;
             margin-bottom: 8px;
             font-weight: bold;
         }
+
         input {
             width: 100%;
             padding: 8px;
@@ -36,6 +41,7 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
+
         button {
             background-color: #28a745;
             color: white;
@@ -44,25 +50,33 @@
             border-radius: 4px;
             cursor: pointer;
         }
+
         button:hover {
             background-color: #218838;
         }
     </style>
 </head>
+
 <body>
     <h1>Add a New Book</h1>
     <form th:action="@{/addbook}" th:object="${book}" method="post">
         <label for="title">Title:</label>
-        <input type="text" id="title" th:field="*{title}" /><br/>
+        <input type="text" id="title" th:field="*{title}" /><br />
         <label for="author">Author:</label>
-        <input type="text" id="author" th:field="*{author}" /><br/>
+        <input type="text" id="author" th:field="*{author}" /><br />
         <label for="publicationYear">Publication Year:</label>
-        <input type="number" id="publicationYear" th:field="*{publicationYear}" /><br/>
+        <input type="number" id="publicationYear" th:field="*{publicationYear}" /><br />
         <label for="isbn">ISBN:</label>
-        <input type="text" id="isbn" th:field="*{isbn}" /><br/>
+        <input type="text" id="isbn" th:field="*{isbn}" /><br />
         <label for="price">Price:</label>
-        <input type="number" step="0.01" id="price" th:field="*{price}" /><br/>
+        <input type="number" step="0.01" id="price" th:field="*{price}" /><br />
+        <label for="category">Category:</label>
+        <select id="category" th:field="*{category}">
+            <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}">
+            </option>
+        </select><br />
         <button type="submit">Add Book</button>
     </form>
 </body>
+
 </html>
