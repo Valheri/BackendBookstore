@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import exercise5.bookstore.model.Book;
 import exercise5.bookstore.repository.BookRepository;
@@ -64,5 +65,20 @@ public class BookController  {
     public String deleteBook(@PathVariable("id") Long id) {
         bookRepository.deleteById(id);
         return "redirect:/booklist";
+    }
+
+    // REST endpoint for all books
+    @GetMapping("/api/books")
+    @ResponseBody
+    public Iterable<Book> getAllBooks() {
+        return bookRepository.findAll();
+    }
+
+    // REST endpoint for single book by id
+    @GetMapping("/api/books/{id}")
+    @ResponseBody
+    public Book getBookById(@PathVariable("id") Long id) {
+        return bookRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Invalid book Id: " + id));
     }
 }
