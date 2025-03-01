@@ -1,62 +1,67 @@
 package exercise5.bookstore;
+
 //source: https://github.com/Haaga-Helia-SOF003AS3A/backend-programming/blob/master/SecureStudentList/src/main/java/fi/haagahelia/course/WebSecurityConfig.java
 //import static method antMatcher
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+
+import exercise5.bookstore.model.AppUser;
+import exercise5.bookstore.repository.UserRepository;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true)
 public class WebSecurityConfig {
 
-	// with lambda
-	@Bean
-	public SecurityFilterChain configure(HttpSecurity http) throws Exception {
-		http
-			.authorizeHttpRequests(authorize -> authorize
-				.requestMatchers(antMatcher("/css/**"), antMatcher("/")).permitAll() // Enable css when logged out
-				.anyRequest().authenticated()
-			).formLogin(formlogin -> formlogin
-                .loginPage("/login")
-				.defaultSuccessUrl("/booklist", true).permitAll()
-			).logout(logout -> logout
-				.permitAll()
-			);
-		return http.build();
-	}
+    private final UserRepository userRepository;
 
-	@Bean
-	public UserDetailsService userDetailsService() {
-		
-		
-		List<UserDetails> users = new ArrayList<UserDetails>();
+    public WebSecurityConfig(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
-		PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    @Bean
+    public SecurityFilterChain configure(HttpSecurity http) throws Exception {
+        http
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(antMatcher("/css/**"), antMatcher("/")).permitAll() // Enable css when logged
+                                                                                             // out
 
-		UserDetails user1 = User.withUsername("user").password(passwordEncoder.encode("user")).roles("USER").build();
+                        .anyRequest().authenticated())
+                .formLogin(formlogin -> formlogin
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/booklist", true).permitAll())
+                .logout(logout -> logout
+                        .permitAll());
 
-		users.add(user1);
+        return http.build();
+    }
 
-		UserDetails user2 = User.withUsername("admin").password(passwordEncoder.encode("admin")).roles("USER", "ADMIN")
-				.build();
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return username -> {
+            AppUser user = userRepository.findByUsername(username);
+            if (user == null) {
+                throw new UsernameNotFoundException("User not found");
+            }
+            return org.springframework.security.core.userdetails.User.withUsername(user.getUsername())
+                    .password(user.getPassword())
+                    .roles(user.getRole())
+                    .build();
+        };
+    }
 
-		users.add(user2);
-
-		return new InMemoryUserDetailsManager(users);
-	}
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }
