@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,25 +10,32 @@
             font-family: Arial, sans-serif;
             margin: 20px;
         }
+
         h1 {
             color: #333;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-        th, td {
+
+        th,
+        td {
             padding: 10px;
             border: 1px solid #ddd;
             text-align: left;
         }
+
         th {
             background-color: #f4f4f4;
         }
+
         tr:nth-child(even) {
             background-color: #f9f9f9;
         }
+
         .button {
             display: inline-block;
             padding: 8px 12px;
@@ -42,19 +50,33 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
+
         .button:hover {
             background-color: #0056b3;
         }
+
         .button.delete {
             background-color: #DC3545;
         }
+
         .button.delete:hover {
             background-color: #c82333;
         }
     </style>
 </head>
+
 <body>
     <h1>Book List</h1>
+
+    <div sec:authorize="isAuthenticated()">
+        Logged in as: <span sec:authentication="principal.username"></span>
+    </div>
+    <div>
+        <form th:action="@{/logout}" method="post">
+            <input type="submit" value="Sign Out" />
+        </form>
+    </div>
+    </div>
     <table>
         <thead>
             <tr>
@@ -64,7 +86,7 @@
                 <th>ISBN</th>
                 <th>Price</th>
                 <th>Category</th>
-                <th>Actions</th>
+                <th sec:authorize="hasRole('ADMIN')">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -75,13 +97,16 @@
                 <td th:text="${book.isbn}">ISBN</td>
                 <td th:text="${book.price}">Price</td>
                 <td th:text="${book.category != null ? book.category.name : 'No Category'}">Category</td>
-                <td>
-                    <a th:href="@{/delete/{id}(id=${book.id})}" class="button delete">Delete</a>
-                    <a th:href="@{/edit/{id}(id=${book.id})}" class="button">Edit</a>
+                <td sec:authorize="hasRole('ADMIN')">
+                    <div>
+                        <a th:href="@{/delete/{id}(id=${book.id})}" class="button delete">Delete</a>
+                        <a th:href="@{/edit/{id}(id=${book.id})}" class="button">Edit</a>
+                    </div>
                 </td>
             </tr>
         </tbody>
     </table>
-    <a href="/addbook">Add a book</a>
+    <a sec:authorize="hasRole('ADMIN')" href="/addbook" class="button">Add a book</a>
 </body>
+
 </html>

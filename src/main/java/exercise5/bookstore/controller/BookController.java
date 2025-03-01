@@ -1,6 +1,7 @@
 package exercise5.bookstore.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,17 +55,23 @@ public class BookController  {
         model.addAttribute("categories", categoryRepository.findAll());
         return "editbook";
     }
-
+    @Secured("ROLE_ADMIN")
     @PostMapping("/editbook")
     public String editBook(@ModelAttribute Book book) {
         bookRepository.save(book);
         return "redirect:/booklist";
     }
 
+    @Secured("ROLE_ADMIN")
     @GetMapping("/delete/{id}")
     public String deleteBook(@PathVariable("id") Long id) {
         bookRepository.deleteById(id);
         return "redirect:/booklist";
+    }
+
+    @GetMapping("/login")
+    public String login() {
+        return "login";
     }
 
     // REST endpoint for all books
