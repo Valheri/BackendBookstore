@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import exercise5.bookstore.model.Book;
@@ -43,7 +44,7 @@ public class BookController  {
     }
 
     @PostMapping("/addbook")
-    public String addBook(@ModelAttribute Book book) {
+    public String addBookForm(@ModelAttribute Book book) {
         bookRepository.save(book);
         return "redirect:/booklist";
     }
@@ -88,4 +89,12 @@ public class BookController  {
         return bookRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Invalid book Id: " + id));
     }
+
+    @Secured("ROLE_ADMIN")
+    @PostMapping("/api/books")
+    @ResponseBody
+    public Book addBook(@RequestBody Book book) {
+        return bookRepository.save(book);
+    }
+
 }

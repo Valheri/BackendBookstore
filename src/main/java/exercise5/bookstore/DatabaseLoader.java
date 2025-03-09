@@ -14,7 +14,7 @@ public class DatabaseLoader {
     @Bean
     CommandLineRunner initDatabase(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
-            // Create a user with username "user", password "password", email "user@example.com", and role "USER"
+            // Create a user with username "user", password "user", email "user@example.com", and role "USER"
             AppUser user = new AppUser("user", passwordEncoder.encode("user"), "user@example.com", "USER");
             userRepository.save(user);
 
