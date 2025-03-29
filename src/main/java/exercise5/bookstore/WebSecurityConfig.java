@@ -32,9 +32,12 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http
-        
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(antMatcher("/css/**"), antMatcher("/")).permitAll() // Enable css when logged
+                        .requestMatchers(antMatcher("/css/**"),
+                                antMatcher("/"),
+                                antMatcher("/index"),
+                                antMatcher("/login"))
+                        .permitAll() // Permit access to login page
                         .requestMatchers("/api/**").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(formlogin -> formlogin
