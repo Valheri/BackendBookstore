@@ -14,13 +14,19 @@ public class DatabaseLoader {
     @Bean
     CommandLineRunner initDatabase(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
-            // Create a user with username "user", password "user", email "user@example.com", and role "USER"
-            AppUser user = new AppUser("user", passwordEncoder.encode("user"), "user@example.com", "USER");
-            userRepository.save(user);
+            // Create a user with username "user", password "user", email
+            // "user@example.com", and role "USER"
+            if (userRepository.findByUsername("admin") == null) {
+                AppUser user = new AppUser("user", passwordEncoder.encode("user"), "user@example.com", "USER");
+                userRepository.save(user);
+            }
 
-            // Create an admin with username "admin", password "admin", email "admin@example.com", and role "ADMIN"
-            AppUser admin = new AppUser("admin", passwordEncoder.encode("admin"), "admin@example.com", "ADMIN");
-            userRepository.save(admin);
+            // Create an admin with username "admin", password "admin", email
+            // "admin@example.com", and role "ADMIN"
+            if (userRepository.findByUsername("admin") == null) {
+                AppUser admin = new AppUser("admin", passwordEncoder.encode("admin"), "admin@example.com", "ADMIN");
+                userRepository.save(admin);
+            }
         };
     }
 }
